@@ -59,6 +59,7 @@ public:
     
     void jump();
     void duck();
+    ofRectangle rect;
     
 };
 

@@ -44,6 +44,14 @@ void ofApp::setup(){
     bLearnBakground = true;
     threshold = 60;
     
+    rect.x = 10;
+    rect.y = 10;
+    rect.width = 100;
+    rect.height = 100;
+    ofSetColor(0,255,0);
+    
+    ofDrawRectangle(rect);
+    
 }
 
 //--------------------------------------------------------------
@@ -84,14 +92,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofRectangle rect;
-    rect.x = 10;
-    rect.y = 10;
-    rect.width = 100;
-    rect.height = 100;
-    ofSetColor(0,255,0);
     
-    ofDrawRectangle(rect);
     if(curVol>=S_TRIGGER){
         ofSetColor(255,165,0);
         ofDrawRectangle(rect);
@@ -133,14 +134,22 @@ void ofApp::draw(){
     
     //draw line
     ofSetColor(0,255,0);
-    ofDrawLine(500,80,820,80);
-    ofDrawLine(500,180,820,180);
+    ofDrawLine(500,60,820,60);
+    ofDrawLine(500,130,820,130);
     
-    if(blobRect.y<80){
+    if(blobRect.y<60){
         jump();
     }
-        else if(blobRect.y>180){
+        else if(blobRect.y>130){
             duck();
+        }
+        else{
+            rect.x = 10;
+            rect.y = 10;
+            rect.width = 100;
+            rect.height = 100;
+            ofSetColor(0,255,0);
+            ofDrawRectangle(rect);
         }
 }
 
@@ -242,10 +251,18 @@ void ofApp::audioIn(ofSoundBuffer & input){
 }
 
 void ofApp::jump(){
+    rect.x = 10;
+    rect.y = 0;
+    ofSetColor(0,255,0);
+    ofDrawRectangle(rect);
     
 }
 
 void ofApp::duck(){
+    rect.x = 10;
+    rect.y = 50;
+    ofSetColor(0,255,0);
+    ofDrawRectangle(rect);
     
 }
 
