@@ -37,7 +37,7 @@ public:
     float scaledVol;
     
     float curVol;
-    float const S_TRIGGER=0.05;
+    float const S_TRIGGER=0.01;
     
     
     ofSoundStream soundStream;
@@ -59,6 +59,7 @@ public:
     
     void jump();
     void duck();
+    void checkSound();
     ofRectangle rect;
     
 };

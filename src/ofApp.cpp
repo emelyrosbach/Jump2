@@ -93,17 +93,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    if(curVol>=S_TRIGGER){
-        ofSetColor(255,165,0);
-        ofDrawRectangle(rect);
-    }
-    
-    if(curVol>=0.1){
-        ofSetColor(255,0,0);
-        ofDrawRectangle(rect);
-    }
-    
-    ofDrawBitmapString(ofToString(curVol,2), 200, 200);
+    ofDrawBitmapString(ofToString(curVol,2), 20, 200);
     
     //Video
     // draw the incoming, the grayscale, the bg and the thresholded difference
@@ -144,12 +134,11 @@ void ofApp::draw(){
             duck();
         }
         else{
+            checkSound();
             rect.x = 10;
             rect.y = 10;
-            rect.width = 100;
-            rect.height = 100;
-            ofSetColor(0,255,0);
             ofDrawRectangle(rect);
+            
         }
 }
 
@@ -251,19 +240,31 @@ void ofApp::audioIn(ofSoundBuffer & input){
 }
 
 void ofApp::jump(){
+    checkSound();
     rect.x = 10;
     rect.y = 0;
-    ofSetColor(0,255,0);
     ofDrawRectangle(rect);
     
 }
 
 void ofApp::duck(){
+    checkSound();
     rect.x = 10;
     rect.y = 50;
-    ofSetColor(0,255,0);
     ofDrawRectangle(rect);
     
+}
+
+void ofApp::checkSound(){
+    if(curVol>=S_TRIGGER){
+        ofSetColor(255,165,0);
+    }
+    ofDrawRectangle(rect);
+    
+    if(curVol>=0.05){
+        ofSetColor(255,0,0);
+        ofDrawRectangle(rect);
+    }
 }
 
 
