@@ -32,12 +32,54 @@ void ofApp::setup(){
     settings.bufferSize = bufferSize;
     soundStream.setup(settings);
     
+    //Video
+    vidGrabber.setVerbose(true);
+    vidGrabber.setup(320,240);
+
+    colorImg.allocate(320,240);
+    grayImage.allocate(320,240);
+    grayBg.allocate(320,240);
+    grayDiff.allocate(320,240);
+    
+    bLearnBakground = true;
+    threshold = 60;
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     //lets scale the vol up to a 0-1 range
     scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
+    
+    //Video
+    ofBackground(100,100,100);
+    
+    bool bNewFrame = false;
+    
+    vidGrabber.update();
+    bNewFrame = vidGrabber.isFrameNew();
+
+    
+    if (bNewFrame){
+        
+  
+        colorImg.setFromPixels(vidGrabber.getPixels());
+        grayImage = colorImg;
+        if (bLearnBakground == true){
+            grayBg = grayImage;
+            bLearnBakground = false;
+        }
+
+        
+        // take the abs value of the difference between background and incoming and then threshold:
+        grayDiff.absDiff(grayBg, grayImage);
+        grayDiff.threshold(threshold);
+        
+        // find contours which are between the size of 20 pixels and 1/3 the w*h pixels.
+        // also, find holes is set to true so we will get interior contours as well....
+        contourFinder.findContours(grayDiff, 3000,30000, 1,false, true);
+    }
+
 }
 
 //--------------------------------------------------------------
@@ -61,11 +103,62 @@ void ofApp::draw(){
     }
     
     ofDrawBitmapString(ofToString(curVol,2), 200, 200);
+    
+    //Video
+    // draw the incoming, the grayscale, the bg and the thresholded difference
+    ofSetHexColor(0xffffff);
+    //colorImg.draw(20,20);
+    grayImage.draw(150,10);
+    //grayBg.draw(20,280);
+    grayDiff.draw(500,10);
+    
+    // then draw the contours:
+    
+    ofFill();
+    ofSetHexColor(0x333333);
+    //ofDrawRectangle(360,540,320,240);
+    ofSetHexColor(0xffffff);
+    
+    // we could draw the whole contour finder
+    //contourFinder.draw(360,540);
+    
+    ofColor c(255,255, 255);
+    for(int i=0;i < contourFinder.nBlobs;i++){
+        blobRect = contourFinder.blobs.at(i).boundingRect;
+        blobRect.x +=500; blobRect.y +=10;
+        c.setHsb(i*64,255,255);
+        ofSetColor(c);
+        ofDrawRectangle(blobRect);
+    }
+    
+    //draw line
+    ofSetColor(0,255,0);
+    ofDrawLine(500,80,820,80);
+    ofDrawLine(500,180,820,180);
+    
+    if(blobRect.y<80){
+        jump();
+    }
+        else if(blobRect.y>180){
+            duck();
+        }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    
+    switch (key){
+        case ' ':
+            bLearnBakground = true;
+            break;
+        case '+':
+            threshold ++;
+            if (threshold > 255) threshold = 255;
+            break;
+        case '-':
+            threshold --;
+            if (threshold < 0) threshold = 0;
+            break;
+    }
 }
 
 //--------------------------------------------------------------
@@ -145,6 +238,14 @@ void ofApp::audioIn(ofSoundBuffer & input){
     smoothedVol += 0.07 * curVol;
     
     bufferCounter++;
+    
+}
+
+void ofApp::jump(){
+    
+}
+
+void ofApp::duck(){
     
 }
 

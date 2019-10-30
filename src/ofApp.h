@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxOpenCv.h"
 
 class ofApp : public ofBaseApp{
     
@@ -21,6 +22,7 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
+    //Audio
     void audioIn(ofSoundBuffer & input);
     
     vector <float> left;
@@ -39,6 +41,24 @@ public:
     
     
     ofSoundStream soundStream;
+    
+    //Video
+
+    ofVideoGrabber         vidGrabber;
+    ofxCvGrayscaleImage     grayImage;
+    ofxCvGrayscaleImage     grayBg;
+    ofxCvGrayscaleImage     grayDiff;
+    ofxCvColorImage            colorImg;
+    
+    ofxCvContourFinder     contourFinder;
+    
+    int                 threshold;
+    bool                bLearnBakground;
+    
+    ofRectangle blobRect;
+    
+    void jump();
+    void duck();
     
 };
 
