@@ -61,6 +61,12 @@ public:
     void duck();
     void checkSound();
     ofRectangle rect;
+    float xPos,yPos,startingX,startingY,endX,endY;
+    
+    //Background
+    ofVideoPlayer         background;
+    bool                frameByframe;
+
     
 };
 

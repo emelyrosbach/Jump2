@@ -44,13 +44,28 @@ void ofApp::setup(){
     bLearnBakground = true;
     threshold = 60;
     
-    rect.x = 10;
-    rect.y = 10;
+    rect.x = 50;
+    rect.y = 50;
     rect.width = 100;
     rect.height = 100;
     ofSetColor(0,255,0);
     
     ofDrawRectangle(rect);
+    
+    //Background
+    frameByframe = false;
+    background.load("galaxy.mov");
+    background.setLoopState(OF_LOOP_NORMAL);
+    background.play();
+    
+    //Animation
+    startingX=0;
+    startingY=600;
+    xPos=startingX;
+    yPos=startingY;
+    endX=100;
+    endY=100;
+    ofDrawRectangle(xPos,yPos,100,100);
     
 }
 
@@ -86,6 +101,9 @@ void ofApp::update(){
         // find contours which are between the size of 20 pixels and 1/3 the w*h pixels.
         // also, find holes is set to true so we will get interior contours as well....
         contourFinder.findContours(grayDiff, 3000,30000, 1,false, true);
+        
+        //Background
+        background.update();
     }
 
 }
@@ -93,15 +111,19 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
+    //Background
+    background.draw(10,10,640,480);
+    
+    //Audio
     ofDrawBitmapString(ofToString(curVol,2), 20, 200);
     
     //Video
     // draw the incoming, the grayscale, the bg and the thresholded difference
     ofSetHexColor(0xffffff);
     //colorImg.draw(20,20);
-    grayImage.draw(150,10);
+    //grayImage.draw(150,10);
     //grayBg.draw(20,280);
-    grayDiff.draw(500,10);
+    grayDiff.draw(700,10);
     
     // then draw the contours:
     
@@ -116,7 +138,7 @@ void ofApp::draw(){
     ofColor c(255,255, 255);
     for(int i=0;i < contourFinder.nBlobs;i++){
         blobRect = contourFinder.blobs.at(i).boundingRect;
-        blobRect.x +=500; blobRect.y +=10;
+        blobRect.x +=700; blobRect.y +=10;
         c.setHsb(i*64,255,255);
         ofSetColor(c);
         ofDrawRectangle(blobRect);
@@ -124,8 +146,8 @@ void ofApp::draw(){
     
     //draw line
     ofSetColor(0,255,0);
-    ofDrawLine(500,60,820,60);
-    ofDrawLine(500,130,820,130);
+    ofDrawLine(700,60,1030,60);
+    ofDrawLine(700,130,1030,130);
     
     if(blobRect.y<60){
         jump();
@@ -135,11 +157,13 @@ void ofApp::draw(){
         }
         else{
             checkSound();
-            rect.x = 10;
-            rect.y = 10;
-            ofDrawRectangle(rect);
+            /*rect.x = 50;
+            rect.y = 50;
+             */
+            ofDrawRectangle(xPos,yPos,100,100);
             
         }
+    
 }
 
 //--------------------------------------------------------------
@@ -241,17 +265,26 @@ void ofApp::audioIn(ofSoundBuffer & input){
 
 void ofApp::jump(){
     checkSound();
-    rect.x = 10;
+    /*rect.x = 50;
     rect.y = 0;
     ofDrawRectangle(rect);
-    
+    */
+    if(yPos>=endY){
+        yPos-=5.0;
+    }
+    ofDrawRectangle(xPos,yPos,100,100);
 }
 
 void ofApp::duck(){
     checkSound();
-    rect.x = 10;
-    rect.y = 50;
+    /*rect.x = 50;
+    rect.y = 100;
     ofDrawRectangle(rect);
+     */
+    if(yPos<=startingY){
+        yPos+=5.0;
+    }
+    ofDrawRectangle(xPos,yPos,100,100);
     
 }
 
