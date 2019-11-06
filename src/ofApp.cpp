@@ -66,6 +66,11 @@ void ofApp::setup(){
     
     blobRect.x = startingX;
     blobRect.y = startingY;
+    
+    blob.x = background.getWidth()+10;
+    blob.y = 10;
+    blob.width = 100;
+    blob.height = 100;
 }
 
 //--------------------------------------------------------------
@@ -103,6 +108,8 @@ void ofApp::update(){
         
         //Background
         background.update();
+        
+        blob.x--;
     }
 
 }
@@ -162,6 +169,12 @@ void ofApp::draw(){
             movetoStart();
             
         }
+    //Blob
+    ofSetColor(0, 0, 255);
+    ofDrawRectangle(blob);
+    if(blob.x==0){
+        blob.x=500;
+    }
     
 }
 

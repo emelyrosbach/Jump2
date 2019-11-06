@@ -68,6 +68,8 @@ public:
     //Background
     ofVideoPlayer         background;
     bool                frameByframe;
+    
+    ofRectangle blob;
 
     
 };
