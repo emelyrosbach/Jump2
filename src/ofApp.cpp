@@ -44,14 +44,6 @@ void ofApp::setup(){
     bLearnBakground = true;
     threshold = 60;
     
-    rect.x = 50;
-    rect.y = 50;
-    rect.width = 100;
-    rect.height = 100;
-    ofSetColor(0,255,0);
-    
-    ofDrawRectangle(rect);
-    
     //Background
     frameByframe = false;
     background.load("galaxy.mov");
@@ -59,14 +51,21 @@ void ofApp::setup(){
     background.play();
     
     //Animation
-    startingX=0;
-    startingY=600;
-    xPos=startingX;
-    yPos=startingY;
-    endX=100;
-    endY=100;
-    ofDrawRectangle(xPos,yPos,100,100);
+    startingX=100;
+    startingY=100;
+    endJump=10;
+    endDuck=300;
     
+    rect.x = startingX;
+    rect.y = startingY;
+    rect.width = 100;
+    rect.height = 100;
+    ofSetColor(0,255,0);
+    
+    ofDrawRectangle(rect);
+    
+    blobRect.x = startingX;
+    blobRect.y = startingY;
 }
 
 //--------------------------------------------------------------
@@ -160,7 +159,7 @@ void ofApp::draw(){
             /*rect.x = 50;
             rect.y = 50;
              */
-            ofDrawRectangle(xPos,yPos,100,100);
+            movetoStart();
             
         }
     
@@ -269,10 +268,11 @@ void ofApp::jump(){
     rect.y = 0;
     ofDrawRectangle(rect);
     */
-    if(yPos>=endY){
-        yPos-=5.0;
+    if(rect.y>=endJump){
+        rect.y -= 5.0;
     }
-    ofDrawRectangle(xPos,yPos,100,100);
+    ofDrawRectangle(rect);
+    
 }
 
 void ofApp::duck(){
@@ -281,10 +281,28 @@ void ofApp::duck(){
     rect.y = 100;
     ofDrawRectangle(rect);
      */
-    if(yPos<=startingY){
-        yPos+=5.0;
+    if(rect.y<=endDuck){
+         rect.y += 5.0;
     }
-    ofDrawRectangle(xPos,yPos,100,100);
+    ofDrawRectangle(rect);
+    
+}
+
+void ofApp::movetoStart(){
+    checkSound();
+    /*rect.x = 50;
+     rect.y = 100;
+     ofDrawRectangle(rect);
+     */
+    if(rect.y!=startingY){
+        if(rect.y<=startingY){
+         rect.y += 5.0;
+    }
+        else{
+             rect.y -= 5.0;
+        }
+    }
+    ofDrawRectangle(rect);
     
 }
 

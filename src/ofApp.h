@@ -60,8 +60,10 @@ public:
     void jump();
     void duck();
     void checkSound();
+    void movetoStart();
+    
     ofRectangle rect;
-    float xPos,yPos,startingX,startingY,endX,endY;
+    float startingX,startingY,endJump,endDuck;
     
     //Background
     ofVideoPlayer         background;
