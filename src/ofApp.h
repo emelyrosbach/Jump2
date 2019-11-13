@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofGraphics.h"
 #include "ofxOpenCv.h"
 
 class ofApp : public ofBaseApp{
@@ -22,55 +23,68 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    //Audio
-    void audioIn(ofSoundBuffer & input);
     
+    // AudioInput
+    void audioIn(ofSoundBuffer & input);
     vector <float> left;
     vector <float> right;
-    vector <float> volHistory;
-    
-    int     bufferCounter;
-    int     drawCounter;
-    
-    
     float smoothedVol;
     float scaledVol;
-    
-    float curVol;
-    float const S_TRIGGER=0.01;
-    
-    
     ofSoundStream soundStream;
+    float curVol;
     
-    //Video
-
+    //VideoInput
     ofVideoGrabber         vidGrabber;
+    
+    ofxCvColorImage            colorImg;
     ofxCvGrayscaleImage     grayImage;
     ofxCvGrayscaleImage     grayBg;
     ofxCvGrayscaleImage     grayDiff;
-    ofxCvColorImage            colorImg;
     
     ofxCvContourFinder     contourFinder;
     
     int                 threshold;
     bool                bLearnBakground;
     
+    //AudioOutput
+    float const S_TRIGGER = 0.005;
+    void checkSound();
+    
+    void move();
+    
+    //VideoOutput
     ofRectangle blobRect;
     
     void jump();
     void duck();
-    void checkSound();
-    void movetoStart();
-    
-    ofRectangle rect;
-    float startingX,startingY,endJump,endDuck;
     
     //Background
-    ofVideoPlayer         background;
-    bool                frameByframe;
+    ofImage         background;
     
-    ofRectangle blob;
-
+    //Animation
+    ofImage character;
+    float xPos, yPos, startingX, startingY, endX, endY, endJump, endDuck, rectX, rectY;
+    void movetoStart();
+    
+    //block
+    ofImage block;
+    float movingX = 570;
+    
+    //shoot
+    int bulletX = 30;
+    void shoot();
+    
+    //UI
+    int grayDiffX = 660;
+    int grayDiffY = 130;
+    
+    int backgroundWidth = 640;
+    int backgroundHeight = 480;
+    
+    int jumpTrigger = grayDiffY+70;
+    int duckTrigger = grayDiffY+140;
+    
+    
     
 };
 
