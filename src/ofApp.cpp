@@ -156,7 +156,7 @@ void ofApp::draw(){
     */
     
     ofPixels & pixels = grayDiff.getPixels();
-    YPixel=0;
+    YPixel=999;
     for(int i = 0; i < grayDiff.width; i++){
         for(int j=0; j < grayDiff.height; j++){
             unsigned char grayValue= pixels[j * grayDiff.width + i];
