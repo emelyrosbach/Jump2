@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofGraphics.h"
 #include "ofxOpenCv.h"
+#include <stdlib.h>  
 
 class ofApp : public ofBaseApp{
     
@@ -36,7 +37,7 @@ public:
     //VideoInput
     ofVideoGrabber         vidGrabber;
     
-    ofxCvColorImage            colorImg;
+    ofxCvColorImage         colorImg;
     ofxCvGrayscaleImage     grayImage;
     ofxCvGrayscaleImage     grayBg;
     ofxCvGrayscaleImage     grayDiff;
@@ -45,6 +46,7 @@ public:
     
     int                 threshold;
     bool                bLearnBakground;
+    int                 YPixel;
     
     //AudioOutput
     float const S_TRIGGER = 0.005;
@@ -59,7 +61,7 @@ public:
     void duck();
     
     //Background
-    ofImage         background;
+    ofImage background;
     
     //Animation
     ofImage character;
@@ -69,10 +71,7 @@ public:
     //block
     ofImage block;
     float movingX = 570;
-    
-    //shoot
-    int bulletX = 30;
-    void shoot();
+    float movingY = 200;
     
     //UI
     int grayDiffX = 660;
@@ -84,6 +83,11 @@ public:
     int jumpTrigger = grayDiffY+70;
     int duckTrigger = grayDiffY+140;
     
+    //Enemy
+    ofImage enemy;
+    float movingYY = 150;
+    float movingXX = 400;
+    void scare();
     
     
 };

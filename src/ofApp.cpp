@@ -1,8 +1,13 @@
 #include "ofApp.h"
+#include <stdlib.h>
 
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    
+    int newX= rand()%backgroundWidth;
+    int newY= rand()%backgroundHeight;
+    cout<<newX<<endl;
     
     //Sound
     ofSetVerticalSync(true);
@@ -33,6 +38,7 @@ void ofApp::setup(){
     soundStream.setup(settings);
     
     //Video
+    YPixel=0;
     vidGrabber.setVerbose(true);
     vidGrabber.setup(320, 240);
     
@@ -68,6 +74,9 @@ void ofApp::setup(){
     //blocks
     block.load("meteor.png");
     
+    //enemy
+    enemy.load("spaceship.png");
+    
     
 }
 
@@ -99,8 +108,10 @@ void ofApp::update(){
         // take the abs value of the difference between background and incoming and then threshold:
         grayDiff.absDiff(grayBg, grayImage);
         grayDiff.threshold(threshold);
+        grayDiff.erode_3x3();
+        grayDiff.dilate_3x3();
         
-        contourFinder.findContours(grayDiff, 2000, 30000, 1 ,false, true);
+        //contourFinder.findContours(grayDiff, 2000, 30000, 1 ,false, true);
     }
     
     //blocks
@@ -112,6 +123,10 @@ void ofApp::update(){
     
     //bullet
     checkSound();
+    
+    //enemy
+    enemy.update();
+    movingXX -= 3;
     
     
 }
@@ -130,7 +145,7 @@ void ofApp::draw(){
     grayDiff.draw(grayDiffX, grayDiffY);
     
     
-    ofColor c(255, 255, 255);
+    /*ofColor c(255, 255, 255);
     for (int i = 0; i < contourFinder.nBlobs; i++) {
         blobRect = contourFinder.blobs.at(i).boundingRect;
         blobRect.x += 660; blobRect.y += 130;
@@ -138,6 +153,21 @@ void ofApp::draw(){
         ofSetColor(c);
         ofDrawRectangle(blobRect);
     }
+    */
+    
+    ofPixels & pixels = grayDiff.getPixels();
+    YPixel=0;
+    for(int i = 0; i < grayDiff.width; i++){
+        for(int j=0; j < grayDiff.height; j++){
+            unsigned char grayValue= pixels[j * grayDiff.width + i];
+        if ((grayValue>0) && (j<YPixel)) {
+            YPixel=j+grayDiffY;
+            //break;
+         }
+        }
+    }
+    cout<<YPixel<<endl;
+    
     
     //draw line (Trigger)
     
@@ -145,10 +175,11 @@ void ofApp::draw(){
     ofDrawLine(grayDiffX, (grayDiffY + 70), (grayDiffX + 320), (grayDiffY + 70));
     ofDrawLine(grayDiffX, (grayDiffY + 140), (grayDiffX + 320), (grayDiffY + 140));
     
-    if (blobRect.y <jumpTrigger) {
+    //or YPixel<jumpTrigger
+    if ( YPixel<jumpTrigger) {
         jump();
     }
-    else if (blobRect.y > duckTrigger) {
+    else if (YPixel>duckTrigger) {
         duck();
     }
     else {
@@ -160,6 +191,14 @@ void ofApp::draw(){
     block.draw(movingX, 200, 100, 100);
     if (movingX <= 10) {
         movingX = 570;
+    }
+    
+  
+    //enemy
+    enemy.draw(movingXX, movingYY);
+    if (movingXX <= 10) {
+        movingXX = 570;
+    
     }
     
 }
@@ -290,7 +329,7 @@ void ofApp::duck() {
 //------------------------------
 void ofApp::checkSound() {
     if (curVol >= S_TRIGGER) {
-        shoot();
+        scare();
     }
     
 }
@@ -312,13 +351,15 @@ void ofApp::movetoStart() {
     
 }
 
-//------------------------------
-void ofApp::shoot() {
+void ofApp::scare() {
     
-    if (bulletX >= 10 + background.getWidth()) {
-        bulletX = 0;
+    movingYY -= 3;
+    if (movingYY == 0) {
+        movingXX = 570;
+        movingYY = 150;
     }
-    ofSetColor(157, 53, 131);
-    ofDrawCircle(bulletX,rectY,15);
+    
 }
+
+//------------------------------
 
