@@ -27,6 +27,7 @@ public:
     
     // AudioInput
     void audioIn(ofSoundBuffer & input);
+    
     vector <float> left;
     vector <float> right;
     float smoothedVol;
@@ -34,44 +35,41 @@ public:
     ofSoundStream soundStream;
     float curVol;
     
+    //AudioOutput
+    float const S_TRIGGER = 0.005;
+    void checkSound();
+    void move();
+    
     //VideoInput
     ofVideoGrabber         vidGrabber;
-    
     ofxCvColorImage         colorImg;
     ofxCvGrayscaleImage     grayImage;
     ofxCvGrayscaleImage     grayBg;
     ofxCvGrayscaleImage     grayDiff;
-    
     ofxCvContourFinder     contourFinder;
-    
     int                 threshold;
     bool                bLearnBakground;
     int                 YPixel;
     
-    //AudioOutput
-    float const S_TRIGGER = 0.005;
-    void checkSound();
-    
-    void move();
     
     //VideoOutput
     ofRectangle blobRect;
-    
     void jump();
     void duck();
+    void movetoStart();
     
     //Background
     ofImage background;
     
     //Animation
     ofImage character;
-    float xPos, yPos, startingX, startingY, endX, endY, endJump, endDuck, rectX, rectY;
-    void movetoStart();
+    float startingX, startingY, endX, endY, endJump, endDuck, charX, charY;
+    int generateRandomY();
     
-    //block
-    ofImage block;
-    float movingX = 570;
-    float movingY = 200;
+    //meteor
+    ofImage meteor;
+    float meteorX = 570;
+    float meteorY = 200;
     
     //UI
     int grayDiffX = 660;
@@ -85,8 +83,8 @@ public:
     
     //Enemy
     ofImage enemy;
-    float movingYY = 150;
-    float movingXX = 400;
+    float enemyY = 150;
+    float enemyX = 400;
     void scare();
     
     

@@ -5,31 +5,19 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
-    int newX= rand()%backgroundWidth;
-    int newY= rand()%backgroundHeight;
-    cout<<newX<<endl;
-    
     //Sound
     ofSetVerticalSync(true);
-    
     soundStream.printDeviceList();
-    
     int bufferSize = 256;
-    
     left.assign(bufferSize, 0.0);
     right.assign(bufferSize, 0.0);
-    
     smoothedVol = 0.0;
     scaledVol = 0.0;
-    
-    
     ofSoundStreamSettings settings;
-    
     auto devices = soundStream.getMatchingDevices("default");
     if (!devices.empty()) {
         settings.setInDevice(devices[0]);
     }
-    
     settings.setInListener(this);
     settings.sampleRate = 44100;
     settings.numOutputChannels = 0;
@@ -41,12 +29,10 @@ void ofApp::setup(){
     YPixel=0;
     vidGrabber.setVerbose(true);
     vidGrabber.setup(320, 240);
-    
     colorImg.allocate(320, 240);
     grayImage.allocate(320, 240);
     grayBg.allocate(320, 240);
     grayDiff.allocate(320, 240);
-    
     bLearnBakground = true;
     threshold = 60;
     
@@ -58,75 +44,57 @@ void ofApp::setup(){
     startingX = 30;
     startingY = 200;
     endJump = 80;
-    endDuck = 240;
-    
-    rectX = startingX;
-    rectY = startingY;
-    ofSetColor(0, 255, 0);
-    
-    checkSound();
+    endDuck = 300;
+    charX = startingX;
+    charY = startingY;
     character.load("Monster.png");
-    character.draw(rectX,rectY,100,100);
-    
+    character.draw(charX,charY,100,100);
     blobRect.x = startingX;
     blobRect.y = startingY;
     
-    //blocks
-    block.load("meteor.png");
+    //meteor
+    meteor.load("meteor.png");
     
     //enemy
     enemy.load("spaceship.png");
-    
-    
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
     //Audio
     scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
     
     //Video
     ofBackground(100, 100, 100);
-    
     bool bNewFrame = false;
-    
     vidGrabber.update();
     bNewFrame = vidGrabber.isFrameNew();
-    
-    
     if (bNewFrame) {
-        
         colorImg.setFromPixels(vidGrabber.getPixels());
-        
-        
         grayImage = colorImg;
         if (bLearnBakground == true) {
             grayBg = grayImage;        // the = sign copys the pixels from grayImage into grayBg (operator overloading)
             bLearnBakground = false;
         }
-        
         // take the abs value of the difference between background and incoming and then threshold:
         grayDiff.absDiff(grayBg, grayImage);
         grayDiff.threshold(threshold);
         grayDiff.erode_3x3();
         grayDiff.dilate_3x3();
-        
         //contourFinder.findContours(grayDiff, 2000, 30000, 1 ,false, true);
     }
     
-    //blocks
-    block.update();
-    movingX-=3;
+    //meteor
+    meteor.update();
+    meteorX-=3;
     
     //character
     character.update();
     
-    //bullet
-    checkSound();
-    
     //enemy
     enemy.update();
-    movingXX -= 3;
+    enemyX -= 3;
     
     
 }
@@ -139,13 +107,12 @@ void ofApp::draw(){
     background.draw(10, 10, backgroundWidth, backgroundHeight);
     
     //Video
-    
     // draw the incoming, the grayscale, the bg and the thresholded difference
     ofSetHexColor(0xffffff);
     grayDiff.draw(grayDiffX, grayDiffY);
     
-    
-    /*ofColor c(255, 255, 255);
+    ofColor c(255, 255, 255);
+    /*
     for (int i = 0; i < contourFinder.nBlobs; i++) {
         blobRect = contourFinder.blobs.at(i).boundingRect;
         blobRect.x += 660; blobRect.y += 130;
@@ -154,7 +121,6 @@ void ofApp::draw(){
         ofDrawRectangle(blobRect);
     }
     */
-    
     ofPixels & pixels = grayDiff.getPixels();
     YPixel=999;
     for(int i = 0; i < grayDiff.width; i++){
@@ -168,38 +134,44 @@ void ofApp::draw(){
     }
     cout<<YPixel<<endl;
     
-    
     //draw line (Trigger)
-    
     ofSetColor(0, 255, 0);
-    ofDrawLine(grayDiffX, (grayDiffY + 70), (grayDiffX + 320), (grayDiffY + 70));
-    ofDrawLine(grayDiffX, (grayDiffY + 140), (grayDiffX + 320), (grayDiffY + 140));
-    
-    //or YPixel<jumpTrigger
+    ofDrawLine(grayDiffX, jumpTrigger, (grayDiffX + 320), jumpTrigger);
+    ofDrawLine(grayDiffX, duckTrigger, (grayDiffX + 320), duckTrigger);
+    //blobRect.y or YPixel
     if ( YPixel<jumpTrigger) {
         jump();
     }
+    
+    //blobRect.y or YPixel
     else if (YPixel>duckTrigger) {
         duck();
     }
+    
     else {
         movetoStart();
     }
     
-    //blocks
+    //meteor
     ofSetColor(255, 255, 255);
-    block.draw(movingX, 200, 100, 100);
-    if (movingX <= 10) {
-        movingX = 570;
+    if (meteorX <= 10) {
+        meteorX = 570;
+        meteorY = generateRandomY();
     }
+    meteor.draw(meteorX, meteorY, 100, 100);
     
   
     //enemy
-    enemy.draw(movingXX, movingYY);
-    if (movingXX <= 10) {
-        movingXX = 570;
-    
+    checkSound();
+    enemy.draw(enemyX, enemyY);
+    if (enemyX <= 10) {
+        enemyX = 570;
     }
+    
+    //Parameters
+    //ofDrawBitmapString(ofToString(curVol,2), grayDiffX, 400);
+    ofDrawBitmapString(ofToString(YPixel,2), grayDiffX, 420);
+
     
 }
 
@@ -274,26 +246,20 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 void ofApp::audioIn(ofSoundBuffer & input) {
     
     curVol = 0.0;
-    
     // samples are "interleaved"
     int numCounted = 0;
-    
     //lets go through each sample and calculate the root mean square which is a rough way to calculate volume
     for (size_t i = 0; i < input.getNumFrames()-1; i++) {
         left[i] = input[i * 2] * 0.5;
         right[i] = input[i * 2 + 1] * 0.5;
-        
         curVol += left[i] * left[i];
         curVol += right[i] * right[i];
         numCounted += 2;
     }
-    
     //this is how we get the mean of rms :)
     curVol /= (float)numCounted;
-    
     // this is how we get the root of rms :)
     curVol = sqrt(curVol);
-    
     smoothedVol *= 0.93;
     smoothedVol += 0.07 * curVol;
     
@@ -302,28 +268,22 @@ void ofApp::audioIn(ofSoundBuffer & input) {
 
 //--------------------------------------------------------------
 void ofApp::jump() {
-    
-    checkSound();
-    
-    if (rectY >= endJump) {
-        rectY -= 5.0;
+
+    if (charY >= endJump) {
+        charY -= 5.0;
     }
-    
     ofSetColor(255, 255, 255);
-    character.draw(rectX,rectY,100,100);
+    character.draw(charX,charY,100,100);
 }
 
 //--------------------------------------------------------------
 void ofApp::duck() {
-    
-    checkSound();
-    
-    if (rectY <= endDuck) {
-        rectY += 5.0;
+   
+    if (charY <= endDuck) {
+        charY += 5.0;
     }
-    
     ofSetColor(255, 255, 255);
-    character.draw(rectX, rectY,100,100);
+    character.draw(charX, charY,100,100);
 }
 
 //------------------------------
@@ -337,28 +297,32 @@ void ofApp::checkSound() {
 //------------------------------
 void ofApp::movetoStart() {
     
-    checkSound();
-    if (rectY != startingY) {
-        if (rectY <= startingY) {
-            rectY += 5.0;
+    if (charY != startingY) {
+        if (charY <= startingY) {
+            charY += 5.0;
         }
         else {
-            rectY -= 5.0;
+            charY -= 5.0;
         }
     }
     ofSetColor(255, 255, 255);
-    character.draw(rectX, rectY, 100, 100);
+    character.draw(charX, charY, 100, 100);
     
 }
 
 void ofApp::scare() {
     
-    movingYY -= 3;
-    if (movingYY == 0) {
-        movingXX = 570;
-        movingYY = 150;
+    enemyY -= 3;
+    if (enemyY == 0) {
+        enemyX = 570;
+        enemyY = 150;
     }
     
+}
+
+int ofApp::generateRandomY(){
+    int newY= rand()%backgroundHeight+10;
+    return (newY);
 }
 
 //------------------------------
