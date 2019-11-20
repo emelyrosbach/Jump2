@@ -63,8 +63,15 @@ public:
     
     //Animation
     ofImage character;
-    float startingX, startingY, endX, endY, endJump, endDuck, charX, charY;
+    int startingX, startingY, endX, endY, endJump, endDuck, charX, charY;
     int generateRandomY();
+    void checkForCollisions();
+    
+    //life
+    int lifeCounter = 3;
+    ofImage heart1;
+    ofImage heart2;
+    ofImage heart3;
     
     //meteor
     ofImage meteor;

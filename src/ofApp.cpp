@@ -57,6 +57,14 @@ void ofApp::setup(){
     
     //enemy
     enemy.load("spaceship.png");
+    
+    //life
+    heart1.load("heart.png");
+    heart2.load("heart.png");
+    heart3.load("heart.png");
+    heart3.draw(590,15);
+    heart2.draw(530,15);
+    heart1.draw(470,15);
 }
 
 //--------------------------------------------------------------
@@ -82,7 +90,7 @@ void ofApp::update(){
         grayDiff.threshold(threshold);
         grayDiff.erode_3x3();
         grayDiff.dilate_3x3();
-        //contourFinder.findContours(grayDiff, 2000, 30000, 1 ,false, true);
+        contourFinder.findContours(grayDiff, 2000, 30000, 1 ,false, true);
     }
     
     //meteor
@@ -96,6 +104,10 @@ void ofApp::update(){
     enemy.update();
     enemyX -= 3;
     
+    //life
+    heart1.update();
+    heart2.update();
+    heart3.update();
     
 }
 
@@ -112,7 +124,7 @@ void ofApp::draw(){
     grayDiff.draw(grayDiffX, grayDiffY);
     
     ofColor c(255, 255, 255);
-    /*
+    
     for (int i = 0; i < contourFinder.nBlobs; i++) {
         blobRect = contourFinder.blobs.at(i).boundingRect;
         blobRect.x += 660; blobRect.y += 130;
@@ -120,7 +132,8 @@ void ofApp::draw(){
         ofSetColor(c);
         ofDrawRectangle(blobRect);
     }
-    */
+    
+    /*
     ofPixels & pixels = grayDiff.getPixels();
     YPixel=999;
     for(int i = 0; i < grayDiff.width; i++){
@@ -132,19 +145,19 @@ void ofApp::draw(){
          }
         }
     }
-    cout<<YPixel<<endl;
-    
+    //cout<<YPixel<<endl;
+    */
     //draw line (Trigger)
     ofSetColor(0, 255, 0);
     ofDrawLine(grayDiffX, jumpTrigger, (grayDiffX + 320), jumpTrigger);
     ofDrawLine(grayDiffX, duckTrigger, (grayDiffX + 320), duckTrigger);
     //blobRect.y or YPixel
-    if ( YPixel<jumpTrigger) {
+    if ( blobRect.y<jumpTrigger) {
         jump();
     }
     
     //blobRect.y or YPixel
-    else if (YPixel>duckTrigger) {
+    else if (blobRect.y>duckTrigger) {
         duck();
     }
     
@@ -171,7 +184,34 @@ void ofApp::draw(){
     //Parameters
     //ofDrawBitmapString(ofToString(curVol,2), grayDiffX, 400);
     ofDrawBitmapString(ofToString(YPixel,2), grayDiffX, 420);
+    ofDrawBitmapString(ofToString(lifeCounter,2), grayDiffX, 440);
+    
+    //life
+    checkForCollisions();
+    switch (lifeCounter){
+        case 1:
+            heart1.draw(470,15);
+            heart2.clear();
+            heart3.clear();
+            break;
+            
+        case 2:
+            heart2.draw(530,15);
+            heart1.draw(470,15);
+            heart3.clear();
+            break;
+        
+        case 3:
+            heart3.draw(590,15);
+            heart2.draw(530,15);
+            heart1.draw(470,15);
+            break;
+            
+    }
 
+    ofRectangle recty (meteorX,meteorY,100,100);
+    ofDrawRectangle(recty);
+    
     
 }
 
@@ -323,6 +363,23 @@ void ofApp::scare() {
 int ofApp::generateRandomY(){
     int newY= rand()%backgroundHeight+10;
     return (newY);
+}
+
+void ofApp::checkForCollisions(){
+ if(enemyX>=charX&&enemyX<=charX+character.getWidth()&&enemyY>=charY&&enemyY<=charY+character.getHeight()){
+        if(lifeCounter>0){
+            lifeCounter--;
+            enemyX = 570;
+            enemyY = generateRandomY();
+        }
+    }
+    else if(meteorX>=charX&&meteorX<=charX+100&&meteorY>=charY&&meteorY<=charY+100){
+            if(lifeCounter>0){
+                lifeCounter--;
+                meteorX = 570;
+                meteorY = generateRandomY();
+            }
+    }
 }
 
 //------------------------------
