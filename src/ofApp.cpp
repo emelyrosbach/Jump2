@@ -69,7 +69,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
+    if(gamestate==true){
     //Audio
     scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
     
@@ -108,12 +108,13 @@ void ofApp::update(){
     heart1.update();
     heart2.update();
     heart3.update();
-    
+        
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
+    if(gamestate==true){
     //background
     ofSetColor(255, 255, 255);
     background.draw(10, 10, backgroundWidth, backgroundHeight);
@@ -185,6 +186,7 @@ void ofApp::draw(){
     //ofDrawBitmapString(ofToString(curVol,2), grayDiffX, 400);
     ofDrawBitmapString(ofToString(YPixel,2), grayDiffX, 420);
     ofDrawBitmapString(ofToString(lifeCounter,2), grayDiffX, 440);
+    ofDrawBitmapString(ofToString(meteorX,2), grayDiffX, 460);
     
     //life
     checkForCollisions();
@@ -208,11 +210,12 @@ void ofApp::draw(){
             break;
             
     }
-
-    ofRectangle recty (meteorX,meteorY,100,100);
-    ofDrawRectangle(recty);
+    }
     
-    
+    else{
+        background.draw(10,10,backgroundWidth,backgroundHeight);
+        background.load("start.jpg");
+    }
 }
 
 //--------------------------------------------------------------
@@ -229,6 +232,9 @@ void ofApp::keyPressed(int key){
             threshold--;
             if (threshold < 0) threshold = 0;
             break;
+        case 's':
+            gamestate=true;
+            background.load("background.jpg");
     }
 }
 
@@ -353,27 +359,31 @@ void ofApp::movetoStart() {
 void ofApp::scare() {
     
     enemyY -= 3;
-    if (enemyY == 0) {
+    if (enemyY <= 0) {
         enemyX = 570;
-        enemyY = 150;
+        enemyY = generateRandomY();
     }
-    
+
 }
 
 int ofApp::generateRandomY(){
-    int newY= rand()%backgroundHeight+10;
+    int newY= (rand()%(backgroundHeight-100))+10;
     return (newY);
 }
 
 void ofApp::checkForCollisions(){
- if(enemyX>=charX&&enemyX<=charX+character.getWidth()&&enemyY>=charY&&enemyY<=charY+character.getHeight()){
+ int midpointXE=enemyX+50;
+ int midpointYE=enemyY+50;
+ int midpointXM=meteorX+50;
+ int midpointYM=meteorY+50;
+ if(midpointXE>=charX&&midpointXE<=charX+100&&midpointYE>=charY&&midpointYE<=charY+100){
         if(lifeCounter>0){
             lifeCounter--;
             enemyX = 570;
             enemyY = generateRandomY();
         }
     }
-    else if(meteorX>=charX&&meteorX<=charX+100&&meteorY>=charY&&meteorY<=charY+100){
+    else if(midpointXM>=charX&&midpointXM<=charX+100&&midpointYM>=charY&&midpointYM<=charY+100){
             if(lifeCounter>0){
                 lifeCounter--;
                 meteorX = 570;

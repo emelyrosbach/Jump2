@@ -68,6 +68,7 @@ public:
     void checkForCollisions();
     
     //life
+    bool gamestate=false;
     int lifeCounter = 3;
     ofImage heart1;
     ofImage heart2;
