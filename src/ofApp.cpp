@@ -69,7 +69,7 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    if(gamestate==true){
+    if(gamestate==true && lifeCounter!=0){
     //Audio
     scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
     
@@ -90,8 +90,20 @@ void ofApp::update(){
         grayDiff.threshold(threshold);
         grayDiff.erode_3x3();
         grayDiff.dilate_3x3();
-        contourFinder.findContours(grayDiff, 2000, 30000, 1 ,false, true);
+        //contourFinder.findContours(grayDiff, 2000, 30000, 1 ,false, true);
+        ofPixels & pixels = grayDiff.getPixels();
+        YPixel=999;
+        for(int y = grayDiff.height;y>=0; y--){
+            for(int x=0; x< grayDiff.width; x++){
+                unsigned char grayValue= pixels[y * grayDiff.width + x];
+                if ((grayValue>0) && (y<YPixel)) {
+                    YPixel=y+grayDiffY;
+                    break;
+                }
+            }
+        }
     }
+    
     
     //meteor
     meteor.update();
@@ -114,7 +126,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    if(gamestate==true){
+    if(gamestate==true&& lifeCounter!=0){
     //background
     ofSetColor(255, 255, 255);
     background.draw(10, 10, backgroundWidth, backgroundHeight);
@@ -124,8 +136,8 @@ void ofApp::draw(){
     ofSetHexColor(0xffffff);
     grayDiff.draw(grayDiffX, grayDiffY);
     
+    /*
     ofColor c(255, 255, 255);
-    
     for (int i = 0; i < contourFinder.nBlobs; i++) {
         blobRect = contourFinder.blobs.at(i).boundingRect;
         blobRect.x += 660; blobRect.y += 130;
@@ -133,32 +145,21 @@ void ofApp::draw(){
         ofSetColor(c);
         ofDrawRectangle(blobRect);
     }
-    
-    /*
-    ofPixels & pixels = grayDiff.getPixels();
-    YPixel=999;
-    for(int i = 0; i < grayDiff.width; i++){
-        for(int j=0; j < grayDiff.height; j++){
-            unsigned char grayValue= pixels[j * grayDiff.width + i];
-        if ((grayValue>0) && (j<YPixel)) {
-            YPixel=j+grayDiffY;
-            //break;
-         }
-        }
-    }
-    //cout<<YPixel<<endl;
     */
+    
+
     //draw line (Trigger)
     ofSetColor(0, 255, 0);
     ofDrawLine(grayDiffX, jumpTrigger, (grayDiffX + 320), jumpTrigger);
     ofDrawLine(grayDiffX, duckTrigger, (grayDiffX + 320), duckTrigger);
+    ofDrawLine(grayDiffX, YPixel, (grayDiffX + 320), YPixel);
     //blobRect.y or YPixel
-    if ( blobRect.y<jumpTrigger) {
+    if ( YPixel<jumpTrigger) {
         jump();
     }
     
     //blobRect.y or YPixel
-    else if (blobRect.y>duckTrigger) {
+    else if (YPixel>duckTrigger) {
         duck();
     }
     
@@ -212,9 +213,13 @@ void ofApp::draw(){
     }
     }
     
-    else{
+    else if (lifeCounter ==0){
+        background.load("gameover.jpg");
         background.draw(10,10,backgroundWidth,backgroundHeight);
+    }
+    else if (lifeCounter>0&&gamestate==false) {
         background.load("start.jpg");
+        background.draw(10,10,backgroundWidth,backgroundHeight);
     }
 }
 
@@ -235,6 +240,12 @@ void ofApp::keyPressed(int key){
         case 's':
             gamestate=true;
             background.load("background.jpg");
+            break;
+        case 'a':
+            gamestate=false;
+            lifeCounter=3;
+            setup();
+            break;
     }
 }
 
