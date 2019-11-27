@@ -5,6 +5,13 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
+    //Countdown
+    ofBackground(255,255,255);
+    ofSetVerticalSync(true);
+    countdown.setLoopState(OF_LOOP_NONE);
+    countdown.load("Countdown.mp4");
+    done=false;
+    
     //Sound
     ofSetVerticalSync(true);
     soundStream.printDeviceList();
@@ -240,6 +247,7 @@ void ofApp::keyPressed(int key){
         case 's':
             gamestate=true;
             background.load("background.jpg");
+            setup();
             break;
         case 'a':
             gamestate=false;

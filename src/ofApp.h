@@ -89,6 +89,9 @@ public:
     int jumpTrigger = grayDiffY+70;
     int duckTrigger = grayDiffY+140;
     
+    ofVideoPlayer countdown;
+    bool done=false;
+    
     //Enemy
     ofImage enemy;
     float enemyY = 150;
