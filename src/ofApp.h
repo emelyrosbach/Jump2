@@ -36,9 +36,9 @@ public:
     float curVol;
     
     //AudioOutput
-    float const S_TRIGGER = 0.01;
+    float const S_TRIGGER = 0.03;
     void checkSound();
-    void move();
+
     
     //VideoInput
     ofVideoGrabber         vidGrabber;

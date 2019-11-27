@@ -49,8 +49,8 @@ void ofApp::setup(){
     //Animation
     startingX = 30;
     startingY = 200;
-    endJump = 80;
-    endDuck = 300;
+    endJump = 30;
+    endDuck = 380;
     charX = startingX;
     charY = startingY;
     character.load("Monster.png");
@@ -126,7 +126,7 @@ void ofApp::update(){
     
     //enemy
     enemy.update();
-    enemyX -= 3;
+    enemyX -= 6;
     
     //life
     heart1.update();
@@ -394,7 +394,7 @@ void ofApp::movetoStart() {
 
 void ofApp::scare() {
     
-    enemyY -= 4;
+    enemyY -= 6;
     if (enemyY <= 0) {
         enemyX = 570;
         enemyY = generateRandomY();
