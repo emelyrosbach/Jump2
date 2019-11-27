@@ -36,7 +36,7 @@ public:
     float curVol;
     
     //AudioOutput
-    float const S_TRIGGER = 0.005;
+    float const S_TRIGGER = 0.01;
     void checkSound();
     void move();
     
@@ -79,6 +79,10 @@ public:
     float meteorX = 570;
     float meteorY = 200;
     
+    ofImage meteor2;
+    float meteorX2 = 570;
+    float meteorY2 = 300;
+    
     //UI
     int grayDiffX = 660;
     int grayDiffY = 130;
@@ -90,7 +94,6 @@ public:
     int duckTrigger = grayDiffY+140;
     
     ofVideoPlayer countdown;
-    bool done=false;
     
     //Enemy
     ofImage enemy;

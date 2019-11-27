@@ -8,9 +8,8 @@ void ofApp::setup(){
     //Countdown
     ofBackground(255,255,255);
     ofSetVerticalSync(true);
+    countdown.load("Countdown.mov");
     countdown.setLoopState(OF_LOOP_NONE);
-    countdown.load("Countdown.mp4");
-    done=false;
     
     //Sound
     ofSetVerticalSync(true);
@@ -61,6 +60,8 @@ void ofApp::setup(){
     
     //meteor
     meteor.load("meteor.png");
+    meteor2.load("meteor.png");
+
     
     //enemy
     enemy.load("spaceship.png");
@@ -77,6 +78,8 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     if(gamestate==true && lifeCounter!=0){
+    //Countdown
+    countdown.update();
     //Audio
     scaledVol = ofMap(smoothedVol, 0.0, 0.17, 0.0, 1.0, true);
     
@@ -114,7 +117,9 @@ void ofApp::update(){
     
     //meteor
     meteor.update();
-    meteorX-=3;
+    meteorX-=2;
+    meteor2.update();
+    meteorX2-=4;
     
     //character
     character.update();
@@ -134,6 +139,11 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     if(gamestate==true&& lifeCounter!=0){
+    //Countdown
+    ofSetColor(255, 255, 255);
+    countdown.draw(10,10, backgroundWidth, backgroundHeight);
+    bool done=countdown.getIsMovieDone();
+    if (done){
     //background
     ofSetColor(255, 255, 255);
     background.draw(10, 10, backgroundWidth, backgroundHeight);
@@ -182,6 +192,13 @@ void ofApp::draw(){
     }
     meteor.draw(meteorX, meteorY, 100, 100);
     
+    ofSetColor(255, 255, 255);
+    if (meteorX2 <= 10) {
+        meteorX2 = 570;
+        meteorY2 = generateRandomY();
+    }
+    meteor2.draw(meteorX2, meteorY2, 100, 100);
+    
   
     //enemy
     checkSound();
@@ -191,10 +208,9 @@ void ofApp::draw(){
     }
     
     //Parameters
-    //ofDrawBitmapString(ofToString(curVol,2), grayDiffX, 400);
-    ofDrawBitmapString(ofToString(YPixel,2), grayDiffX, 420);
+    ofDrawBitmapString(ofToString(curVol,2), grayDiffX, 400);
     ofDrawBitmapString(ofToString(lifeCounter,2), grayDiffX, 440);
-    ofDrawBitmapString(ofToString(meteorX,2), grayDiffX, 460);
+    
     
     //life
     checkForCollisions();
@@ -217,6 +233,7 @@ void ofApp::draw(){
             heart1.draw(470,15);
             break;
             
+    }
     }
     }
     
@@ -247,7 +264,7 @@ void ofApp::keyPressed(int key){
         case 's':
             gamestate=true;
             background.load("background.jpg");
-            setup();
+            countdown.play();
             break;
         case 'a':
             gamestate=false;
@@ -377,7 +394,7 @@ void ofApp::movetoStart() {
 
 void ofApp::scare() {
     
-    enemyY -= 3;
+    enemyY -= 4;
     if (enemyY <= 0) {
         enemyX = 570;
         enemyY = generateRandomY();
@@ -395,6 +412,8 @@ void ofApp::checkForCollisions(){
  int midpointYE=enemyY+50;
  int midpointXM=meteorX+50;
  int midpointYM=meteorY+50;
+ int midpointXM2=meteorX2+50;
+ int midpointYM2=meteorY2+50;
  if(midpointXE>=charX&&midpointXE<=charX+100&&midpointYE>=charY&&midpointYE<=charY+100){
         if(lifeCounter>0){
             lifeCounter--;
@@ -408,6 +427,13 @@ void ofApp::checkForCollisions(){
                 meteorX = 570;
                 meteorY = generateRandomY();
             }
+    }
+    else if(midpointXM2>=charX&&midpointXM2<=charX+100&&midpointYM2>=charY&&midpointYM2<=charY+100){
+        if(lifeCounter>0){
+            lifeCounter--;
+            meteorX2 = 570;
+            meteorY2 = generateRandomY();
+        }
     }
 }
 
