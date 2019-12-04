@@ -4,6 +4,9 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    //Music
+    mySound.load("music.mp3");
+    
     
     //Countdown
     ofBackground(255,255,255);
@@ -117,9 +120,9 @@ void ofApp::update(){
     
     //meteor
     meteor.update();
-    meteorX-=2;
+    meteorX-=4;
     meteor2.update();
-    meteorX2-=4;
+    meteorX2-=6;
     
     //character
     character.update();
@@ -265,6 +268,7 @@ void ofApp::keyPressed(int key){
             gamestate=true;
             background.load("background.jpg");
             countdown.play();
+            mySound.play();
             break;
         case 'a':
             gamestate=false;

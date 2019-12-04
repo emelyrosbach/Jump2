@@ -101,6 +101,9 @@ public:
     float enemyX = 400;
     void scare();
     
+    //Music
+    ofSoundPlayer   mySound;
+    
     
 };
 
