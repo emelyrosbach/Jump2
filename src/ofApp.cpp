@@ -36,6 +36,8 @@ void ofApp::setup(){
     
     //Video
     YPixel=0;
+    vidGrabber.listDevices();
+    vidGrabber.setDeviceID(1);
     vidGrabber.setVerbose(true);
     vidGrabber.setup(320, 240);
     colorImg.allocate(320, 240);
@@ -120,9 +122,9 @@ void ofApp::update(){
     
     //meteor
     meteor.update();
-    meteorX-=4;
+    meteorX-=3;
     meteor2.update();
-    meteorX2-=6;
+    meteorX2-=5;
     
     //character
     character.update();
@@ -268,7 +270,7 @@ void ofApp::keyPressed(int key){
             gamestate=true;
             background.load("background.jpg");
             countdown.play();
-            mySound.play();
+            //mySound.play();
             break;
         case 'a':
             gamestate=false;
